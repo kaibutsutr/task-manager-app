@@ -15,6 +15,7 @@ app.get("/hello", (req, res) => {
   res.send("Hello world"); // test message
 });
 
+// we build a start function to start our server. We want to run our db first then if no errors start listening on port.
 const start = async () => {
   try {
     await connectDB();
@@ -23,3 +24,4 @@ const start = async () => {
     console.log(error);
   }
 };
+start(); // we invoke the function to start our server
