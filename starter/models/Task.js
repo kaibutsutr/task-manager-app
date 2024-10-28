@@ -9,7 +9,7 @@ const TaskSchema = new mongoose.Schema({
     type: String,
     required: [true, "must provide a name"], // throw an error if req field is empty
     trim: true, //get rid of empty spaces
-    maxlenght: [true, "too many characters"], // max char limit
+    maxlength: [20, "too many characters"], // max char limit  type length correctly!!!
   },
   completed: {
     type: Boolean, // type of
