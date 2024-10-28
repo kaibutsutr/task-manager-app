@@ -3,6 +3,7 @@ const express = require("express"); //boilerplate for basic express server
 const app = express();
 const port = 3000;
 const connectDB = require("./db/connect");
+require("dotenv").config();
 //middlewares
 app.use(express.json());
 
@@ -18,7 +19,7 @@ app.get("/hello", (req, res) => {
 // we build a start function to start our server. We want to run our db first then if no errors start listening on port.
 const start = async () => {
   try {
-    await connectDB();
+    await connectDB(process.env.MONGO_URI);
     app.listen(port, console.log(`server is listening on ${port}`));
   } catch (error) {
     console.log(error);
