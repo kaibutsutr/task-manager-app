@@ -34,19 +34,34 @@ const getSingleTask = async (req, res) => {
   }
 };
 
-const patchTask = (req, res) => {
-  res.send("update item");
-};
-const deleteTask = async (req, res) => {
+const patchTask = async (req, res) => {
   try {
     const { id: taskID } = req.params; //destructure id from req.params and name it as taskID same as const id=req.params.id
-    const task = await Task.findOneAndDelete({ _id: taskID }); // look for db to find document with given ID
+    const taskData = req.body;
+    const task = await Task.findOneAndUpdate({ _id: taskID, taskData }); // look for db to find document with given ID. if it doesnt exists, it will return NULL otherwise its deleted
     if (!task) {
-      return res.status(404).json({ task });
+      // it returned null
+      return res.status(404).json({ msg: "404 not found!" });
       // if task id returned a NULL value, give 404 error and DONT execute rest of the function because you will get double error.
     }
 
-    res.status(200).json({ msg: "Data deleted successfully" }); // same as task:task
+    res.status(200).json({ task }); // show the updated task
+  } catch (error) {
+    res.status(500).json({ msg: error }); // 500 is generic server error code. Send json file with error note
+  }
+};
+
+const deleteTask = async (req, res) => {
+  try {
+    const { id: taskID } = req.params; //destructure id from req.params and name it as taskID same as const id=req.params.id
+    const task = await Task.findOneAndDelete({ _id: taskID }); // look for db to find document with given ID. if it doesnt exists, it will return NULL otherwise its deleted
+    if (!task) {
+      // it returned null
+      return res.status(404).json({ msg: "404 not found!" });
+      // if task id returned a NULL value, give 404 error and DONT execute rest of the function because you will get double error.
+    }
+
+    res.status(200).json({ task }); // show the deleted task
   } catch (error) {
     res.status(500).json({ msg: error }); // 500 is generic server error code. Send json file with error note
   }
