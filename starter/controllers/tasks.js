@@ -14,21 +14,42 @@ const createTask = async (req, res) => {
 
 const getAllTasks = async (req, res) => {
   try {
-    const tasks = await Task.find({}); //find({}) is find all
+    const tasks = await Task.find({}); //find({}) is find all. tasks is plural so mongoodse knows its many documents. Singular means its a singular doc
     res.status(200).json({ tasks }); // same as tasks:tasks
   } catch (error) {
     res.status(500).json({ msg: error }); // 500 is generic server error code. Send json file with error note
   }
 };
-const getSingleTask = (req, res) => {
-  res.json({ id: req.params.id });
+const getSingleTask = async (req, res) => {
+  try {
+    const { id: taskID } = req.params; //destructure id from req.params and name it as taskID same as const id=req.params.id
+    const task = await Task.findOne({ _id: taskID }); // look for db to find document with given ID
+    if (!task) {
+      return res.status(404).json({ msg: "404 not found!" });
+      // if task id returned a NULL value, give 404 error and DONT execute rest of the function because you will get double error.
+    }
+    res.status(200).json({ task }); // same as task:task
+  } catch (error) {
+    res.status(500).json({ msg: error }); // 500 is generic server error code. Send json file with error note
+  }
 };
 
 const patchTask = (req, res) => {
   res.send("update item");
 };
-const deleteTask = (req, res) => {
-  res.send("delete item");
+const deleteTask = async (req, res) => {
+  try {
+    const { id: taskID } = req.params; //destructure id from req.params and name it as taskID same as const id=req.params.id
+    const task = await Task.findOneAndDelete({ _id: taskID }); // look for db to find document with given ID
+    if (!task) {
+      return res.status(404).json({ task });
+      // if task id returned a NULL value, give 404 error and DONT execute rest of the function because you will get double error.
+    }
+
+    res.status(200).json({ msg: "Data deleted successfully" }); // same as task:task
+  } catch (error) {
+    res.status(500).json({ msg: error }); // 500 is generic server error code. Send json file with error note
+  }
 };
 
 //callback method:
