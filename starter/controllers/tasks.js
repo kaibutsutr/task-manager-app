@@ -38,7 +38,13 @@ const patchTask = async (req, res) => {
   try {
     const { id: taskID } = req.params; //destructure id from req.params and name it as taskID same as const id=req.params.id
     const taskData = req.body;
-    const task = await Task.findOneAndUpdate({ _id: taskID, taskData }); // look for db to find document with given ID. if it doesnt exists, it will return NULL otherwise its deleted
+    const task = await Task.findOneAndUpdate({ _id: taskID }, taskData, {
+      new: true,
+      runValidators: true,
+    }); // look for db to find document with given ID. if it doesnt exists, it will return NULL otherwise its deleted
+    // update content with taskData
+    // third variable is options. new:true means always show the new version of data instead of unedited version.
+    // runValidators: true means run schema validators on newly edited object, this is false by default!!!!
     if (!task) {
       // it returned null
       return res.status(404).json({ msg: "404 not found!" });
