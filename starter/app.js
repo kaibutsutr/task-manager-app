@@ -5,6 +5,8 @@ const port = 3000;
 const connectDB = require("./db/connect");
 require("dotenv").config(); //dotenv for .env file
 const notFound = require("./middleware/not-found"); // we created a mw to show custom error screens
+const errorHandler = require("./middleware/error-handler");
+
 //middlewares
 app.use(express.json()); //json read and write
 app.use(express.static("./public")); // use static files for frontend in public folder
@@ -12,7 +14,8 @@ app.use(express.static("./public")); // use static files for frontend in public 
 //routers
 const tasks = require("./routes/tasks"); //schema
 app.use("/api/v1/tasks", tasks); //model
-app.use(notFound); // custom error message
+app.use(notFound); // custom notfound message
+app.use(errorHandler);
 
 // custom error screen
 
