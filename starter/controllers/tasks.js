@@ -1,7 +1,10 @@
 const Task = require("../models/Task"); // bring our Task Scheme here
-const { createCustomErrorAPI } = require("../errors/custom-error"); // bring custom error here
+const {
+  CustomAPIError,
+  createCustomAPIError,
+} = require("../errors/custom-error"); // bring custom error here
 
-const createTask = async (req, res) => {
+const createTask = async (req, res, next) => {
   // change function from callback to async, which means it returns a promise
   try {
     // we need to put our async function into a try catch block so we can deal with errors easily
@@ -13,7 +16,7 @@ const createTask = async (req, res) => {
   }
 };
 
-const getAllTasks = async (req, res) => {
+const getAllTasks = async (req, res, next) => {
   try {
     const tasks = await Task.find({}); //find({}) is find all. tasks is plural so mongoodse knows its many documents. Singular means its a singular doc
     res.status(200).json({ tasks }); // same as tasks:tasks
@@ -21,21 +24,21 @@ const getAllTasks = async (req, res) => {
     res.status(500).json({ msg: error }); // 500 is generic server error code. Send json file with error note
   }
 };
-const getSingleTask = async (req, res) => {
+const getSingleTask = async (req, res, next) => {
   try {
     const { id: taskID } = req.params; //destructure id from req.params and name it as taskID same as const id=req.params.id
     const task = await Task.findOne({ _id: taskID }); // look for db to find document with given ID
     if (!task) {
-      return res.status(404).json({ msg: "404 not found!" });
+      return next(createCustomAPIError("No task with that ID!", 404));
       // if task id returned a NULL value, give 404 error and DONT execute rest of the function because you will get double error.
     }
     res.status(200).json({ task }); // same as task:task
   } catch (error) {
-    res.status(500).json({ msg: error }); // 500 is generic server error code. Send json file with error note
+    next(error); // 500 is generic server error code. Send json file with error note
   }
 };
 
-const patchTask = async (req, res) => {
+const patchTask = async (req, res, next) => {
   try {
     const { id: taskID } = req.params; //destructure id from req.params and name it as taskID same as const id=req.params.id
     const taskData = req.body;
@@ -48,8 +51,7 @@ const patchTask = async (req, res) => {
     // runValidators: true means run schema validators on newly edited object, this is false by default!!!!
     if (!task) {
       // it returned null
-      return res.status(404).json({ msg: "404 not found!" });
-      // if task id returned a NULL value, give 404 error and DONT execute rest of the function because you will get double error.
+      return next(createCustomAPIError("No task with that ID!", 404)); // if task id returned a NULL value, give 404 error and DONT execute rest of the function because you will get double error.
     }
 
     res.status(200).json({ task }); // show the updated task
@@ -58,14 +60,13 @@ const patchTask = async (req, res) => {
   }
 };
 
-const deleteTask = async (req, res) => {
+const deleteTask = async (req, res, next) => {
   try {
     const { id: taskID } = req.params; //destructure id from req.params and name it as taskID same as const id=req.params.id
     const task = await Task.findOneAndDelete({ _id: taskID }); // look for db to find document with given ID. if it doesnt exists, it will return NULL otherwise its deleted
     if (!task) {
       // it returned null
-      return res.status(404).json({ msg: "404 not found!" });
-      // if task id returned a NULL value, give 404 error and DONT execute rest of the function because you will get double error.
+      return next(createCustomAPIError("No task with that ID!", 404)); // if task id returned a NULL value, give 404 error and DONT execute rest of the function because you will get double error.
     }
 
     res.status(200).json({ task }); // show the deleted task
