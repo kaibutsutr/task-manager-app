@@ -5,7 +5,8 @@ const port = 3000;
 const connectDB = require("./db/connect");
 require("dotenv").config();
 //middlewares
-app.use(express.json());
+app.use(express.json()); //json read and write
+app.use(express.static("./public"));
 
 //routers
 const tasks = require("./routes/tasks");
