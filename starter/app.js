@@ -1,7 +1,7 @@
 require("./db/connect");
 const express = require("express"); //boilerplate for basic express server
 const app = express();
-const port = process.env.PORT || 3000; // use PORT in env, if its null then use 3000
+const port = 3000; // use PORT in env, if its null then use 3000
 const connectDB = require("./db/connect");
 require("dotenv").config(); //dotenv for .env file
 const notFound = require("./middleware/not-found"); // we created a mw to show custom error screens
